@@ -21,8 +21,4 @@ class AppThemes{
       fontFamily: FontConstants.fontFamily
     ),
   };
-
-  static var lightTheme;
-
-  static var darkTheme;
 }
