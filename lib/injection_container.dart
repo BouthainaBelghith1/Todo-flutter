@@ -23,7 +23,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SwitchThemeBloc());
  
   // find and instanciate AppRouter
-  sl.registerLazySingleton(() => AppRouter());
+  sl.registerLazySingleton(() => AppRouter(sl()));
 
   //Firebase Service
   final firebaseService = await FirebaseService.init();
@@ -32,12 +32,12 @@ Future<void> init() async {
   // Feature auth (register + auth)
   // RegisterBloc
   sl.registerLazySingleton(() => UserManagerBloc(registerUserUseCase: sl()));
-  /*sl.registerLazySingleton(() => AuthBloc(
-        SignInUserUseCase: sl(),
-        SignOutUserUseCase: sl(),
+  sl.registerLazySingleton(() => AuthBloc(
+        signInUserUseCase: sl(),
+        signOutUserUseCase: sl(),
         firebaseService: sl(),
         
-      ));*/
+      ));
  
   // Usecases
   sl.registerLazySingleton(() => RegisterUserUseCase(sl()));
