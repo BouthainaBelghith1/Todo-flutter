@@ -10,7 +10,7 @@ import 'package:todo_app/features/tasks/presentation/screens/tasks_screen.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: '/',
+    initialLocation: '/register',
     routes: <GoRoute>[
       GoRoute(
           path: '/',

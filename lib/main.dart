@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/core/themes/theme_manager.dart';
+import 'package:todo_app/features/auth/presentation/bloc/user_manager/user_manager_bloc.dart';
 import 'package:todo_app/features/home/presentation/blocs/switch_theme/switch_theme_bloc.dart';
 import 'package:todo_app/navigation/app_router.dart';
 
@@ -22,7 +23,8 @@ class TodoApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => di.sl<SwitchThemeBloc>(),
-        )
+        ),
+        BlocProvider(create: (context) => di.sl<UserManagerBloc>(/*train d'instanciation*/)),
       ],
       child: BlocBuilder<SwitchThemeBloc, SwitchThemeState>(
           builder: (context, state) {

@@ -15,7 +15,7 @@ class TasksScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()=>GoRouter.of(context).goNamed('login'),
+        onPressed: ()=>GoRouter.of(context).goNamed('register'),
         child: const Icon(Icons.add),
       ),
     );
