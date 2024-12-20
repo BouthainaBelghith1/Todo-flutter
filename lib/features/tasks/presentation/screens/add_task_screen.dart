@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:todo_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:todo_app/features/home/presentation/blocs/switch_theme/switch_theme_bloc.dart';
 import 'package:todo_app/features/tasks/presentation/blocs/bloc/tasks_bloc.dart';
 import 'package:todo_app/features/tasks/presentation/screens/tasks_screen.dart';
+import 'package:todo_app/features/tasks/presentation/widgets/bottom_navigation_bar.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -20,6 +23,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String titleError = '';
   String descriptionError = '';
   String dateError = '';
+  int _currentIndex = 2;
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = 2;
+    });
+
+    if (index == 0) {
+      GoRouter.of(context).goNamed('home');
+    } else if (index == 1) {
+      GoRouter.of(context).goNamed('Calender');
+    } else if (index == 2) {
+      GoRouter.of(context).goNamed('add-task');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +61,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
+            },
           ),
         ],
       ),
@@ -73,7 +93,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(context, isDarkMode),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
+        isDarkMode: isDarkMode,
+      ),
     );
   }
 
@@ -195,73 +219,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar(BuildContext context, bool isDarkMode) {
-  int _currentIndex = 2;
-
-  return BottomNavigationBar(
-    currentIndex: _currentIndex,
-    onTap: (index) {
-      setState(() {
-        _currentIndex = index; // Mettre à jour l'index
-      });
-
-      // Navigation vers les écrans correspondants
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const TasksScreen()),
-        );
-      } else if (index == 1) {
-        // Naviguer vers le calendrier
-      } else if (index == 2) {
-        // Rester sur AddTaskScreen
-      }
-    },
-    backgroundColor: isDarkMode ? Colors.black : Colors.white,
-    selectedItemColor: isDarkMode ? Colors.deepPurple : Colors.purpleAccent,
-    unselectedItemColor: isDarkMode ? Colors.white70 : Colors.black54,
-    showSelectedLabels: false,
-    showUnselectedLabels: false,
-    elevation: 10,
-    type: BottomNavigationBarType.fixed,
-    items: [
-      BottomNavigationBarItem(
-        icon: _buildNavBarIcon(Icons.home, 0, _currentIndex, isDarkMode),
-        label: '',
-      ),
-      BottomNavigationBarItem(
-        icon: _buildNavBarIcon(Icons.calendar_today, 1, _currentIndex, isDarkMode),
-        label: '',
-      ),
-      BottomNavigationBarItem(
-        icon: _buildNavBarIcon(Icons.add, 2, _currentIndex, isDarkMode),
-        label: '',
-      ),
-    ],
-  );
 }
 
-  Widget _buildNavBarIcon(
-      IconData icon, int index, int currentIndex, bool isDarkMode) {
-    final isSelected = index == currentIndex;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? (isDarkMode ? Colors.deepPurple.shade900 : Colors.purpleAccent)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Icon(
-        icon,
-        size: 30,
-        color: isSelected
-            ? Colors.white
-            : (isDarkMode ? Colors.white70 : Colors.black54),
-      ),
-    );
-  }
+Widget _buildNavBarIcon(
+    IconData icon, int index, int currentIndex, bool isDarkMode) {
+  final isSelected = index == currentIndex;
+  return AnimatedContainer(
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
+    padding: const EdgeInsets.all(8.0),
+    decoration: BoxDecoration(
+      color: isSelected
+          ? (isDarkMode ? Colors.deepPurple.shade900 : Colors.purpleAccent)
+          : Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Icon(
+      icon,
+      size: 30,
+      color: isSelected
+          ? Colors.white
+          : (isDarkMode ? Colors.white70 : Colors.black54),
+    ),
+  );
 }

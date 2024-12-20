@@ -7,9 +7,15 @@ abstract class TasksState extends Equatable {
   List<Object?> get props => [];
 }
 
-class TasksInitial extends TasksState {}
+class TasksInitial extends TasksState {
+  @override
+  List<Object?> get props => [];
+}
 
-class TaskLoading extends TasksState {}
+class TaskLoading extends TasksState {
+  @override
+  List<Object?> get props => []; 
+}
 
 class TaskError extends TasksState {
   final String message;
@@ -17,26 +23,23 @@ class TaskError extends TasksState {
   const TaskError({required this.message});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message]; 
 }
 
 class TaskLoaded extends TasksState {
   final List<TaskEntity> tasks;
-  
 
   const TaskLoaded({required this.tasks});
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [tasks]; 
 }
 
 class TaskAddedState extends TasksState {
   final TaskEntity task;
 
-  TaskAddedState(this.task);
+  const TaskAddedState(this.task);
 
   @override
-  List<Object> get props => [task];
+  List<Object> get props => [task]; 
 }
-
-

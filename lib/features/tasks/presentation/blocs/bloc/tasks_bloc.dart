@@ -4,8 +4,10 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/features/tasks/domain/entities/task_entity.dart';
+import 'package:todo_app/features/tasks/domain/repositories/task_repository.dart';
 import 'package:todo_app/features/tasks/domain/usecases/add_task.dart';
 import 'package:todo_app/features/tasks/domain/usecases/delete_task.dart';
 import 'package:todo_app/features/tasks/domain/usecases/get_all_tasks.dart';
@@ -30,7 +32,6 @@ class TaskBloc extends Bloc<TasksEvent, TasksState> {
     required this.updateTask,
     required this.deleteTask,
   }) : super(TasksInitial()) {
-    
     on<GetTasksEvent>((event, emit) async {
       emit(TaskLoading());
       try {
@@ -54,7 +55,7 @@ class TaskBloc extends Bloc<TasksEvent, TasksState> {
           );
         }).toList();
 
-        if (event.filter == TaskFilter.done ) {
+        if (event.filter == TaskFilter.done) {
           tasks =
               tasks.where((task) => task.isDone && !task.isDeleted).toList();
         } else if (event.filter == TaskFilter.undone) {
@@ -62,7 +63,7 @@ class TaskBloc extends Bloc<TasksEvent, TasksState> {
               tasks.where((task) => !task.isDone && !task.isDeleted).toList();
         } else if (event.filter == TaskFilter.deleted) {
           tasks = tasks.where((task) => task.isDeleted).toList();
-        }else if (event.filter == TaskFilter.all) {
+        } else if (event.filter == TaskFilter.all) {
           tasks = tasks.where((task) => !task.isDeleted).toList();
         }
 
@@ -167,5 +168,33 @@ class TaskBloc extends Bloc<TasksEvent, TasksState> {
         emit(TaskError(message: 'Failed to delete task: $e'));
       }
     });
+
+    on<LoadTaskByIdEvent>((event, emit) async {
+      try {
+        final taskSnapshot =
+            await _firestore.collection('tasks').doc(event.id).get();
+        if (taskSnapshot.exists) {
+          final taskData = taskSnapshot.data()!;
+          final task = TaskEntity(
+            id: taskSnapshot.id,
+            title: taskData['title'],
+            description: taskData['description'],
+            date: (taskData['date'] as Timestamp).toDate(),
+            isDone: taskData['isDone'],
+            isDeleted: taskData['isDeleted'],
+            userId: taskData['user'],
+          );
+
+          emit(TaskLoaded(tasks: [
+            task
+          ])); 
+        } else {
+          emit(TaskError(message: 'Task not found'));
+        }
+      } catch (e) {
+        emit(TaskError(message: 'Failed to load task: $e'));
+      }
+    });
   }
+
 }

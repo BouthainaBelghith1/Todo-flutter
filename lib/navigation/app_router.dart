@@ -7,15 +7,14 @@ import 'package:todo_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:todo_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:todo_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:todo_app/features/tasks/presentation/screens/add_task_screen.dart';
-import 'package:todo_app/features/tasks/presentation/screens/detail_task_screen.dart';
-import 'package:todo_app/features/tasks/presentation/screens/edit_task_screen.dart';
+import 'package:todo_app/features/tasks/presentation/screens/calendar_screen.dart';
 import 'package:todo_app/features/tasks/presentation/screens/tasks_screen.dart';
 
 class AppRouter {
   final AuthBloc authBloc;
- 
+
   AppRouter(this.authBloc);
- 
+
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     initialLocation: '/',
@@ -33,19 +32,9 @@ class AppRouter {
               builder: (context, state) => const AddTaskScreen(),
             ),
             GoRoute(
-                path: 'detail-task/:id',
-                name: 'detail-task',
-                builder: (context, state) {
-                  final id = state.pathParameters['id'];
-                  return DetailTaskScreen(id: id!);
-                }),
-            GoRoute(
-              path: 'edit-task/:id',
-              name: 'edit-task',
-              builder: (context, state) {
-                final id = state.pathParameters['id'];
-                return EditTaskScreen(id: id);
-              },
+              path: 'calendar',
+              name: 'calendar',
+              builder: (context, state) => const CalendarScreen(),
             ),
           ]),
       GoRoute(
@@ -77,17 +66,17 @@ class AppRouter {
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
   );
 }
- 
+
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
- 
+
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen(
           (dynamic _) => notifyListeners(),
         );
   }
- 
+
   @override
   void dispose() {
     _subscription.cancel();

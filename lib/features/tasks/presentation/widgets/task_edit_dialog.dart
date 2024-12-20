@@ -34,16 +34,29 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
     super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: widget.task.date,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2101),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+      });
+    }
+  }
+
   void _saveTask() {
-    // Convert the date string to DateTime if necessary
-    // For example, if date is in 'yyyy-MM-dd' format
     DateTime? updatedDate = DateTime.tryParse(_dateController.text);
 
     final updatedTask = TaskEntity(
       id: widget.task.id,
       title: _titleController.text,
       description: _descriptionController.text,
-      date: updatedDate ?? DateTime.now(),  // Use the parsed date or the current date if invalid
+      date: updatedDate ?? DateTime.now(), 
       isDone: widget.task.isDone,
       isDeleted: widget.task.isDeleted,
       userId: widget.task.userId,
@@ -67,16 +80,22 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
             controller: _descriptionController,
             decoration: const InputDecoration(labelText: 'Description'),
           ),
-          TextField(
-            controller: _dateController,
-            decoration: const InputDecoration(labelText: 'Due Date'),
+          GestureDetector(
+            onTap: () => _selectDate(context),
+            child: AbsorbPointer(
+              child: TextField(
+                controller: _dateController,
+                decoration: const InputDecoration(labelText: 'Due Date'),
+                readOnly: true,
+              ),
+            ),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.pop(context); // Close the dialog without saving
+            Navigator.pop(context); 
           },
           child: const Text('Cancel'),
         ),

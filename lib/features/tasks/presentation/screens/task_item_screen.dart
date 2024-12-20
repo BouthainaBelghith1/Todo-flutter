@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:todo_app/features/home/presentation/blocs/switch_theme/switch_theme_bloc.dart';
 import 'package:todo_app/features/tasks/domain/entities/task_entity.dart';
 import 'package:todo_app/features/tasks/presentation/blocs/bloc/tasks_bloc.dart';
@@ -35,9 +36,9 @@ class TaskItemScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.logout),
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
             },
           ),
         ],

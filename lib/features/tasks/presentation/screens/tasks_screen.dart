@@ -1,10 +1,13 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todo_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:todo_app/features/home/presentation/blocs/switch_theme/switch_theme_bloc.dart';
 import 'package:todo_app/features/tasks/presentation/blocs/bloc/tasks_bloc.dart';
 import 'package:todo_app/features/tasks/presentation/screens/add_task_screen.dart';
 import 'package:todo_app/features/tasks/presentation/screens/task_item_screen.dart';
+import 'package:todo_app/features/tasks/presentation/widgets/bottom_navigation_bar.dart';
 import 'package:todo_app/features/tasks/presentation/widgets/task_item.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -15,15 +18,30 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  int _currentIndex = 0; // pour suivre l'index sélectionné du footer
+  int _currentIndex = 0; 
   int totalTasks = 0;
   int doneTasks = 0;
   int undoneTasks = 0;
+  int deletedTasks = 0;
 
   @override
   void initState() {
     super.initState();
     context.read<TaskBloc>().add(GetTasksEvent(filter: TaskFilter.undone));
+  }
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = 0;
+    });
+
+    if (index == 0) {
+      GoRouter.of(context).goNamed('home');
+    } else if (index == 1) {
+      GoRouter.of(context).goNamed('calendar');
+    } else if (index == 2) {
+      GoRouter.of(context).goNamed('add-task');
+    }
   }
 
   @override
@@ -56,8 +74,9 @@ class _TasksScreenState extends State<TasksScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.logout),
             onPressed: () {
+              BlocProvider.of<AuthBloc>(context).add(LogoutEvent());
             },
           ),
         ],
@@ -67,10 +86,13 @@ class _TasksScreenState extends State<TasksScreen> {
           if (state is TaskLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TaskLoaded) {
-            if (totalTasks == 0) {
+            if (state is TaskLoaded) {
               totalTasks = state.tasks.where((task) => !task.isDeleted).length;
-              doneTasks = doneTasks = state.tasks.where((task) => task.isDone).length;
-              undoneTasks = state.tasks.where((task) => !task.isDone && !task.isDeleted).length;
+              doneTasks = state.tasks.where((task) => task.isDone).length;
+              undoneTasks = state.tasks
+                  .where((task) => !task.isDone && !task.isDeleted)
+                  .length;
+              deletedTasks = state.tasks.where((task) => task.isDeleted).length;
             }
 
             if (state.tasks.isEmpty) {
@@ -164,6 +186,24 @@ class _TasksScreenState extends State<TasksScreen> {
                             ),
                           ],
                         ),
+                        Row(
+                          children: [
+                            const Icon(Icons.delete, color: Colors.white),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Deleted Tasks',
+                                    style: theme.textTheme.bodyLarge
+                                        ?.copyWith(color: Colors.white)),
+                                const SizedBox(height: 10),
+                                Text('$deletedTasks',
+                                    style: theme.textTheme.headlineMedium
+                                        ?.copyWith(color: Colors.white)),
+                              ],
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -240,102 +280,10 @@ class _TasksScreenState extends State<TasksScreen> {
           return const SizedBox();
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = 0;
-          });
-          if (index == 0) {
-            // Naviguer vers l'écran d'accueil (Home)
-          } else if (index == 1) {
-            // Naviguer vers l'écran du calendrier
-          } else if (index == 2) {
-            // Naviguer vers l'écran d'ajout de tâche (AddTaskScreen)
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddTaskScreen()),
-            );
-          }
-        },
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        selectedItemColor: isDarkMode ? Colors.purpleAccent : Colors.deepPurple,
-        unselectedItemColor: isDarkMode ? Colors.white70 : Colors.black54,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        elevation: 10,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: _currentIndex == 0
-                    ? (isDarkMode
-                        ? Colors.deepPurple.shade900
-                        : Colors.purpleAccent)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.home,
-                size: 30,
-                color: _currentIndex == 0
-                    ? Colors.white
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
-              ),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: _currentIndex == 1
-                    ? (isDarkMode
-                        ? Colors.deepPurple.shade900
-                        : Colors.purpleAccent)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.calendar_today,
-                size: 30,
-                color: _currentIndex == 1
-                    ? Colors.white
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
-              ),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: _currentIndex == 2
-                    ? (isDarkMode
-                        ? Colors.deepPurple.shade900
-                        : Colors.purpleAccent)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.add,
-                size: 30,
-                color: _currentIndex == 2
-                    ? Colors.white
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
-              ),
-            ),
-            label: '',
-          ),
-        ],
+        onTap: _onTap,
+        isDarkMode: isDarkMode,
       ),
     );
   }

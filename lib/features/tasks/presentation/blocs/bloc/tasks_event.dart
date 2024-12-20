@@ -54,4 +54,9 @@ class DeleteTaskEvent extends TasksEvent {
   List<Object?> get props => [task];
 }
 
+class LoadTaskByIdEvent extends TasksEvent {
+  final String id;
+
+  const LoadTaskByIdEvent(this.id);
+}
 
