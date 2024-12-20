@@ -4,6 +4,7 @@ import 'package:todo_app/core/themes/theme_manager.dart';
 import 'package:todo_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:todo_app/features/auth/presentation/bloc/user_manager/user_manager_bloc.dart';
 import 'package:todo_app/features/home/presentation/blocs/switch_theme/switch_theme_bloc.dart';
+import 'package:todo_app/features/tasks/presentation/blocs/bloc/tasks_bloc.dart';
 import 'package:todo_app/navigation/app_router.dart';
 
 import 'injection_container.dart' as di;
@@ -22,12 +23,10 @@ class TodoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => di.sl<SwitchThemeBloc>(),
-        ),
+        BlocProvider(create: (context) => di.sl<SwitchThemeBloc>()),
         BlocProvider(create: (context) => di.sl<UserManagerBloc>()),
         BlocProvider(create: (context) => di.sl<AuthBloc>()),
-
+        BlocProvider(create: (context) => di.sl<TaskBloc>()),
       ],
       child: BlocBuilder<SwitchThemeBloc, SwitchThemeState>(
           builder: (context, state) {

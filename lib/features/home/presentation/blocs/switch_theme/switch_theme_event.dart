@@ -14,3 +14,5 @@ class SwitchLightThemeEvent extends SwitchThemeEvent{
 class SwitchDarkThemeEvent extends SwitchThemeEvent{
   
 }
+
+class ToggleThemeEvent extends SwitchThemeEvent {}

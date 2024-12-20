@@ -8,8 +8,8 @@ class GetAllTasksUseCase{
  
   GetAllTasksUseCase(this.taskRepository);
  
-  Future<Either<Failure, List<TaskEntity>>> call() async{
-    return await taskRepository.getAllTasks();
+  Future<Either<Failure, List<TaskEntity>>> call() {
+    return taskRepository.getAllTasks();
   }
  
  

@@ -19,6 +19,7 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, Unit>> addTask(TaskEntity taskEntity) async {
     TaskModel taskModel = TaskModel(
         id: taskEntity.id,
+        userId: taskEntity.userId,
         title: taskEntity.title,
         description: taskEntity.description,
         date: taskEntity.date,
@@ -41,6 +42,7 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, Unit>> deleteTask(TaskEntity taskEntity) async {
     TaskModel taskModel = TaskModel(
         id: taskEntity.id,
+        userId: taskEntity.userId,
         title: taskEntity.title,
         description: taskEntity.description,
         date: taskEntity.date,
@@ -89,6 +91,7 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, Unit>> updateTask(TaskEntity taskEntity) async {
     TaskModel taskModel = TaskModel(
         id: taskEntity.id,
+        userId: taskEntity.userId,
         title: taskEntity.title,
         description: taskEntity.description,
         date: taskEntity.date,

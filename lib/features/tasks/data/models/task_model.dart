@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 class TaskModel extends TaskEntity {
   TaskModel(
       {required String id,
+      required String userId,
       required String title,
       required description,
       required DateTime date,
@@ -11,6 +12,7 @@ class TaskModel extends TaskEntity {
       isDeleted = false})
       : super(
             id: id,
+            userId: userId,
             title: title,
             description: description,
             date: date,
@@ -20,6 +22,7 @@ class TaskModel extends TaskEntity {
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
       id: json['id'],
+      userId: json['userId'],
       title: json['title'],
       description: json['description'],
       date: DateFormat('d/m/y').parse(json['date']),
@@ -31,6 +34,7 @@ class TaskModel extends TaskEntity {
   Map<String,dynamic> toJson(){
     return {
       'id': id,
+      'userId': userId,
       'title': title,
       'description': description,
       'date': DateFormat('d/m/y').format(date),
